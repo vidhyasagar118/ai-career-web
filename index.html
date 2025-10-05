@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Pro: Resume & Interview Coach</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Apply Inter font family */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        /* Custom scrollbar for better aesthetics */
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollable::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+        .scrollable::-webkit-scrollbar-track {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-emerald-600 flex items-center">
+                <span data-lucide="briefcase" class="w-7 h-7 mr-2"></span>
+                AI Career Pro
+            </h1>
+            <div class="text-sm text-gray-600 flex items-center space-x-2">
+                <span class="font-medium hidden sm:inline">User ID:</span>
+                <span id="user-id" class="px-3 py-1 bg-gray-100 rounded-full text-xs font-mono">Loading</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-4xl font-bold text-gray-800 mb-6">Your Career Dashboard</h2>
+
+        <!-- Dashboard Grid for Main Features -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Card 1: Resume ATS Checker -->
+            <div id="resume-card" class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-2xl hover:scale-[1.01]">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-3 bg-emerald-100 rounded-full">
+                        <span data-lucide="file-text" class="w-6 h-6 text-emerald-600"></span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900">1. Resume ATS Checker</h3>
+                </div>
+                <p class="text-gray-600 mb-6">Upload your resume to get an ATS Compliance Score and detailed suggestions for improvement.</p>
+
+                <div id="upload-section">
+                    <label for="resume-file" class="block text-sm font-medium text-gray-700 mb-2">Select Resume File (.pdf, .docx)</label>
+                    <input type="file" id="resume-file" accept=".pdf,.docx" class="hidden" onchange="displayFileName(this)">
+                    
+                    <button onclick="document.getElementById('resume-file').click()" class="w-full mb-3 px-4 py-2 bg-indigo-50 border border-indigo-300 text-indigo-700 rounded-lg hover:bg-indigo-100 transition duration-150">
+                        <span id="file-name">Upload File</span>
+                    </button>
+                    
+                    <button onclick="simulateAtsCheck()" class="w-full px-4 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition duration-150 shadow-md">
+                        Check ATS Score
+                    </button>
+                </div>
+
+                <div id="results-section" class="hidden mt-6">
+                    <p class="text-sm font-medium text-gray-700">ATS Score:</p>
+                    <div class="flex items-center justify-between mt-1 mb-4">
+                        <span id="ats-score" class="text-4xl font-bold text-green-600">--</span>
+                        <span id="score-message" class="text-lg font-medium text-gray-700">--</span>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 scrollable h-28 overflow-y-auto p-2 bg-gray-50 rounded-lg border">
+                        <li class="flex items-start"><span data-lucide="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0"></span><span class="flex-grow">Keyword Optimization: <span class="font-semibold text-green-700">Excellent</span> (4/5)</span></li>
+                        <li class="flex items-start"><span data-lucide="alert-triangle" class="w-4 h-4 text-orange-500 mr-2 mt-1 flex-shrink-0"></span><span class="flex-grow">Formatting Issues: <span class="font-semibold text-orange-700">Minor issues found</span> (Use standard fonts)</span></li>
+                        <li class="flex items-start"><span data-lucide="x-circle" class="w-4 h-4 text-red-500 mr-2 mt-1 flex-shrink-0"></span><span class="flex-grow">Missing Contact Details: <span class="font-semibold text-red-700">CRITICAL</span> (Missing LinkedIn URL)</span></li>
+                        <li class="flex items-start"><span data-lucide="check-circle" class="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0"></span><span class="flex-grow">Section Headers: <span class="font-semibold text-green-700">Compliant</span></span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 2: Mock Interview Coach -->
+            <div id="interview-card" class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-2xl hover:scale-[1.01]">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-3 bg-red-100 rounded-full">
+                        <span data-lucide="mic-2" class="w-6 h-6 text-red-600"></span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900">2. Mock Interview Coach</h3>
+                </div>
+                <p class="text-gray-600 mb-6">Practice realistic interviews with AI feedback on voice, confidence, and answer content.</p>
+
+                <div id="practice-settings">
+                    <label for="job-role" class="block text-sm font-medium text-gray-700 mb-2">Target Job Role</label>
+                    <select id="job-role" class="w-full mb-4 px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                        <option>Software Engineer (Mid-level)</option>
+                        <option>Data Analyst (Internship)</option>
+                        <option>Marketing Specialist (Entry-level)</option>
+                    </select>
+                
+
+                    <button onclick="simulateInterviewStart()" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-150 shadow-md">
+                        Start Mock Interview
+                    </button>
+                </div>
+
+                <div id="live-interview" class="hidden mt-6">
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="text-sm font-medium text-gray-700">Question:</p>
+                        <p class="font-bold text-lg text-gray-900">"Tell me about a time you faced a difficult technical challenge and how you overcame it."</p>
+                    </div>
+                    
+                    <!-- Confidence Meter Simulation -->
+                    <div class="mb-4">
+                        <p class="text-sm font-medium text-gray-700 mb-1">Live Confidence Meter</p>
+                        <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="confidence-bar" class="h-full bg-yellow-500 transition-all duration-500" style="width: 70%;"></div>
+                        </div>
+                        <p id="confidence-text" class="text-xs mt-1 text-yellow-600 font-semibold text-right">Confident & Steady</p>
+                    </div>
+
+                    <button onclick="simulateInterviewEnd()" class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-md">
+                        End Interview & Get Feedback
+                    </button>
+                </div>
+                
+                <div id="feedback-report" class="hidden mt-6 bg-gray-50 p-4 rounded-lg">
+                    <p class="text-lg font-semibold text-gray-800 mb-2">Feedback Ready!</p>
+                    <p class="text-sm text-gray-600">Overall Score: <span class="text-indigo-600 font-bold">8.5/10</span></p>
+                    <p class="text-sm text-gray-600">Key Improvement: Focus on the STAR method for behavioral questions.</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Job/Internship Recommendations -->
+            <div id="jobs-card" class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-2xl hover:scale-[1.01]">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-3 bg-blue-100 rounded-full">
+                        <span data-lucide="zap" class="w-6 h-6 text-blue-600"></span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900">3. Job Recommendations</h3>
+                </div>
+                <p class="text-gray-600 mb-6">Personalized job and internship recommendations based on your resume and target roles.</p>
+
+                <div class="space-y-4 scrollable h-80 overflow-y-auto">
+                    <!-- Job Item 1 -->
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition duration-150">
+                        <p class="font-semibold text-gray-800">Software Development Intern</p>
+                        <p class="text-sm text-gray-600">TechCorp - Mountain View, CA</p>
+                        <span class="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full mt-1 inline-block">Perfect Match (92%)</span>
+                    </div>
+                    <!-- Job Item 2 -->
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition duration-150">
+                        <p class="font-semibold text-gray-800">Junior Data Scientist</p>
+                        <p class="text-sm text-gray-600">FinTech Solutions - Remote</p>
+                        <span class="text-xs font-medium text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full mt-1 inline-block">Strong Match (85%)</span>
+                    </div>
+                    <!-- Job Item 3 -->
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition duration-150">
+                        <p class="font-semibold text-gray-800">Product Manager Assistant</p>
+                        <p class="text-sm text-gray-600">Global Agency - New York, NY</p>
+                        <span class="text-xs font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full mt-1 inline-block">Good Fit (78%)</span>
+                    </div>
+                    <!-- Job Item 4 -->
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-blue-50 transition duration-150">
+                        <p class="font-semibold text-gray-800">Cloud Computing Specialist</p>
+                        <p class="text-sm text-gray-600">CloudNet Inc. - Seattle, WA</p>
+                        <span class="text-xs font-medium text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full mt-1 inline-block">Strong Match (88%)</span>
+                    </div>
+                </div>
+                
+                <button class="w-full mt-4 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition duration-150">
+                    Search All Listings
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Messages (Instead of alert()) -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3">Notification</h3>
+            <p id="modal-body" class="text-gray-600 mb-4"></p>
+            <button onclick="hideModal()" class="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Close</button>
+        </div>
+    </div>
+
+   <script type="module">
+    // --- Firebase Imports and Setup ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof _firebase_config !== 'undefined' ? JSON.parse(_firebase_config) : null;
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    let db, auth;
+
+    if (firebaseConfig) {
+        setLogLevel('Debug');
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            onAuthStateChanged(auth, async (user) => {
+                let userIdDisplay = document.getElementById('user-id');
+                if (!user) {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                        userIdDisplay.textContent = auth.currentUser?.uid || 'Guest User';
+                    } catch (error) {
+                        console.error("Firebase Auth Error:", error);
+                        userIdDisplay.textContent = 'Auth Failed';
+                    }
+                } else {
+                    userIdDisplay.textContent = user.uid;
+                }
+                console.log("Firebase initialized. App ID:", appId);
+            });
+        } catch (e) {
+            console.error("Firebase Initialization Failed:", e);
+            document.getElementById('user-id').textContent = 'Error Initializing';
+        }
+    } else {
+    console.warn("Firebase configuration not found. Running in demo mode.");
+
+    const userIdDisplay = document.getElementById('user-id');
+
+
+    let randomId = localStorage.getItem('demoUserId');
+    if (!randomId) {
+        randomId = 'UID-' + Math.floor(Math.random() * 1000111000); 
+        localStorage.setItem('demoUserId', randomId);
+    }
+
+    userIdDisplay.textContent = randomId;
+}
+
+
+    window.onload = () => {
+        lucide.createIcons();
+    };
+
+    
+    function showModal(title, message) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-body').textContent = message;
+        document.getElementById('message-modal').classList.remove('hidden');
+        document.getElementById('message-modal').classList.add('flex');
+    }
+
+    function hideModal() {
+        document.getElementById('message-modal').classList.add('hidden');
+        document.getElementById('message-modal').classList.remove('flex');
+    }
+
+    window.hideModal = hideModal;
+
+    // --- Resume ATS Simulation ---
+    function displayFileName(input) {
+        const fileNameSpan = document.getElementById('file-name');
+        fileNameSpan.textContent = input.files.length > 0 ? input.files[0].name : 'Upload File';
+    }
+
+    function simulateAtsCheck() {
+        const fileInput = document.getElementById('resume-file');
+        if (fileInput.files.length === 0) {
+            showModal("Error", "Please upload a resume file first (.pdf or .docx).");
+            return;
+        }
+
+        const uploadSection = document.getElementById('upload-section');
+        const resultsSection = document.getElementById('results-section');
+        const scoreDisplay = document.getElementById('ats-score');
+        const messageDisplay = document.getElementById('score-message');
+
+        uploadSection.innerHTML = `
+            <div class="text-center py-4">
+                <svg class="animate-spin h-6 w-6 text-emerald-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <p class="mt-2 text-gray-500">Analyzing 1,200 data points...</p>
+            </div>`;
+
+        setTimeout(() => {
+            const score = (Math.random() * (95 - 65) + 65).toFixed(1);
+scoreDisplay.textContent = `${score}%`;
+
+            let message;
+            if (score > 85) {
+                message = 'Excellent - Ready to apply!';
+                scoreDisplay.className = 'text-4xl font-bold text-green-600';
+            } else if (score > 75) {
+                message = 'Good - Minor adjustments needed.';
+                scoreDisplay.className = 'text-4xl font-bold text-orange-600';
+            } else {
+                message = 'Fair - Needs critical formatting/keyword review.';
+                scoreDisplay.className = 'text-4xl font-bold text-red-600';
+            }
+
+            messageDisplay.textContent = message;
+
+            uploadSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+
+showModal("ATS Check Complete", `Your score is ${score}%. Review the feedback below for detailed improvements.`);
+        }, 2500);
+    }
+
+    // --- Interview Simulation ---
+    function simulateInterviewStart() {
+        const role = document.getElementById('job-role').value;
+        document.getElementById('practice-settings').classList.add('hidden');
+        document.getElementById('feedback-report').classList.add('hidden');
+        document.getElementById('live-interview').classList.remove('hidden');
+
+showModal("Interview Started", `You are now in a mock interview for: ${role}. Speak clearly into your microphone when ready.`);
+
+        const confidenceBar = document.getElementById('confidence-bar');
+        const confidenceText = document.getElementById('confidence-text');
+
+        let interval = setInterval(() => {
+            const newConfidence = Math.floor(Math.random() * (95 - 50) + 50);
+            confidenceBar.style.width =` ${newConfidence}% `;
+
+            let text, color;
+            if (newConfidence > 80) {
+                text = 'Strong & Clear';
+                color = 'text-green-600';
+                confidenceBar.className = 'h-full bg-green-500 transition-all duration-500';
+            } else if (newConfidence > 65) {
+                text = 'Confident & Steady';
+                color = 'text-yellow-600';
+                confidenceBar.className = 'h-full bg-yellow-500 transition-all duration-500';
+            } else {
+                text = 'Hesitation Detected';
+                color = 'text-red-600';
+                confidenceBar.className = 'h-full bg-red-500 transition-all duration-500';
+            }
+
+            confidenceText.className = `text-xs mt-1 font-semibold text-right ${color}`;
+            confidenceText.textContent = text;
+        }, 1000);
+
+        document.getElementById('live-interview').dataset.interval = interval;
+    }
+
+    function simulateInterviewEnd() {
+        const interval = document.getElementById('live-interview').dataset.interval;
+        if (interval) {
+            clearInterval(interval);
+        }
+
+        document.getElementById('live-interview').classList.add('hidden');
+        document.getElementById('feedback-report').classList.remove('hidden');
+        document.getElementById('practice-settings').classList.remove('hidden');
+
+        showModal("Feedback Generated", "Your full interview report is ready! Review key areas for improvement in the coach section.");
+    }
+
+
+    
+
+    // MAKE FUNCTIONS GLOBAL
+    window.displayFileName = displayFileName;
+    window.simulateAtsCheck = simulateAtsCheck;
+    window.simulateInterviewStart = simulateInterviewStart;
+    window.simulateInterviewEnd = simulateInterviewEnd;
+
+</script>
+    </script>
+</body>
+</html>
